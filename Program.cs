@@ -32,6 +32,12 @@ using (var context = new GraphQL.DemoContext()) {
         LastName = "DiCaprio" 
     };
 
+    var tomHardy = new GraphQL.Person() {
+        Id = 2,
+        FirstName = "Tom",
+        LastName = "Hardy"
+    };
+
     context.Movies.Add(new GraphQL.Movie() {
         Name = "The Departed",
         Genre = GraphQL.Genre.Action,
@@ -47,7 +53,8 @@ using (var context = new GraphQL.DemoContext()) {
         Rating = 10,
         Released = DateTime.Parse("2010-07-16"),
         Actors = new List<GraphQL.Person>() {
-            leonardoDiCaprio
+            leonardoDiCaprio,
+            tomHardy
         }
     });
     context.SaveChanges();
