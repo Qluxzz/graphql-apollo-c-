@@ -38,25 +38,36 @@ using (var context = new GraphQL.DemoContext()) {
         LastName = "Hardy"
     };
 
-    context.Movies.Add(new GraphQL.Movie() {
-        Name = "The Departed",
-        Genre = GraphQL.Genre.Action,
-        Rating = 9.5,
-        Released = DateTime.Parse("2006-10-06"),
-        Actors = new List<GraphQL.Person>() {
-            leonardoDiCaprio
+    context.Movies.AddRange(
+        new GraphQL.Movie() {
+            Name = "The Departed",
+            Genre = GraphQL.Genre.Action,
+            Rating = 9.5,
+            Released = DateTime.Parse("2006-10-06"),
+            Actors = new List<GraphQL.Person>() {
+                leonardoDiCaprio
+            }
+        }, 
+        new GraphQL.Movie() {
+            Name = "Inception",
+            Genre = GraphQL.Genre.Action,
+            Rating = 10,
+            Released = DateTime.Parse("2010-07-16"),
+            Actors = new List<GraphQL.Person>() {
+                leonardoDiCaprio,
+                tomHardy
+            }
+        },
+        new GraphQL.Movie() {
+            Name = "Dunkirk",
+            Genre = GraphQL.Genre.Drama,
+            Rating = 9.7,
+            Released = DateTime.Parse("2017-07-21"),
+            Actors = new List<GraphQL.Person>() {
+                tomHardy
+            }
         }
-    });
-    context.Movies.Add(new GraphQL.Movie() {
-        Name = "Inception",
-        Genre = GraphQL.Genre.Action,
-        Rating = 10,
-        Released = DateTime.Parse("2010-07-16"),
-        Actors = new List<GraphQL.Person>() {
-            leonardoDiCaprio,
-            tomHardy
-        }
-    });
+    );
     context.SaveChanges();
 }
 
