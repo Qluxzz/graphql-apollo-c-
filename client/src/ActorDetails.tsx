@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import { useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import slugify from 'slugify'
+import slugify from './slugify'
 
 const ACTOR = gql`
   query Actor($actorId: ID!) {
@@ -41,12 +41,9 @@ export default function ActorDetails() {
 
     if (!name)
       navigate(
-        `/actor/${data.person.id}/${slugify(
-          [data.person.firstName, data.person.lastName].join('-'),
-          { lower: true },
-        )}`,
+        `/actor/${data.person.id}/${slugify(`${data.person.firstName} ${data.person.lastName}`)}`,
       )
-  }, [loading, error, data])
+  }, [loading, error, data, name, navigate])
 
   if (loading) return <p>LOADING...</p>
   if (error) return <p>Error: {JSON.stringify(error)}</p>
