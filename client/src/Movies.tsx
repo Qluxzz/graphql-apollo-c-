@@ -28,9 +28,7 @@ export default function Movies() {
       <ul>
         {data.movies.map((movie) => (
           <Link to={`movie/${movie.id}/${slugify(movie.name)}`} key={movie.id}>
-            <li>
-              {movie.id} {movie.name}
-            </li>
+            <li>{movie.name}</li>
           </Link>
         ))}
       </ul>
