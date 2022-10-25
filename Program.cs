@@ -1,6 +1,4 @@
-using EntityGraphQL.AspNet.Extensions;
-using EntityGraphQL.ServiceCollectionExtensions;
-using Microsoft.EntityFrameworkCore;
+using EntityGraphQL.AspNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,36 +8,44 @@ builder.Services.AddCors();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment()) {
+if (!app.Environment.IsDevelopment())
+{
     app.UseExceptionHandler("/Error");
     app.UseHsts();
-} else {
-    app.UseCors(options => 
+}
+else
+{
+    app.UseCors(options =>
         options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()
     );
 }
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseEndpoints(endpoints => {
+app.UseEndpoints(endpoints =>
+{
     endpoints.MapGraphQL<GraphQL.DemoContext>();
 });
 
-using (var context = new GraphQL.DemoContext()) {
-    var leonardoDiCaprio = new GraphQL.Person() { 
+using (var context = new GraphQL.DemoContext())
+{
+    var leonardoDiCaprio = new GraphQL.Person()
+    {
         Id = 1,
         FirstName = "Leonardo",
-        LastName = "DiCaprio" 
+        LastName = "DiCaprio"
     };
 
-    var tomHardy = new GraphQL.Person() {
+    var tomHardy = new GraphQL.Person()
+    {
         Id = 2,
         FirstName = "Tom",
         LastName = "Hardy"
     };
 
     context.Movies.AddRange(
-        new GraphQL.Movie() {
+        new GraphQL.Movie()
+        {
             Name = "The Departed",
             Genre = GraphQL.Genre.Action,
             Rating = 9.5,
@@ -47,8 +53,9 @@ using (var context = new GraphQL.DemoContext()) {
             Actors = new List<GraphQL.Person>() {
                 leonardoDiCaprio
             }
-        }, 
-        new GraphQL.Movie() {
+        },
+        new GraphQL.Movie()
+        {
             Name = "Inception",
             Genre = GraphQL.Genre.Action,
             Rating = 10,
@@ -58,7 +65,8 @@ using (var context = new GraphQL.DemoContext()) {
                 tomHardy
             }
         },
-        new GraphQL.Movie() {
+        new GraphQL.Movie()
+        {
             Name = "Dunkirk",
             Genre = GraphQL.Genre.Drama,
             Rating = 9.7,
