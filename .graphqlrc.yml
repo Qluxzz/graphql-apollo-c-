@@ -1,0 +1,3 @@
+schema: 'http://localhost:5034/graphql'
+documents: ''
+extensions: {}
