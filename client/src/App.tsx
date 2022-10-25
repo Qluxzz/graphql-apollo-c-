@@ -1,11 +1,11 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import ActorDetails from './ActorDetails'
-import MovieDetails from './MovieDetails'
-import Movies from './Movies'
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import ActorDetails from "./ActorDetails"
+import MovieDetails from "./MovieDetails"
+import Movies from "./Movies"
 
 const client = new ApolloClient({
-  uri: 'http://localhost:5034/graphql',
+  uri: "http://localhost:5034/graphql",
   cache: new InMemoryCache(),
   connectToDevTools: true,
 })
