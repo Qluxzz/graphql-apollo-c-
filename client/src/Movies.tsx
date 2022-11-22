@@ -5,16 +5,12 @@ import { graphql } from "./gql"
 
 const MOVIES = graphql(`
   query Movies {
-    movies(take: 3) {
-      items {
+    movies {
+      id
+      name
+      released
+      actors {
         id
-        name
-        released
-        actors {
-          items {
-            id
-          }
-        }
       }
     }
   }
@@ -27,12 +23,12 @@ export default function Movies() {
   if (error) return <p>Error {JSON.stringify(error)}</p>
   if (!data) return <p>Error :(</p>
 
-  console.log(data.movies?.items[0].actors)
+  console.log(data.movies[0].actors)
 
   return (
     <div>
       <ul>
-        {data.movies?.items.map((movie) => (
+        {data.movies.map((movie) => (
           <Link to={`movie/${movie.id}/${slugify(movie.name)}`} key={movie.id}>
             <li>
               {movie.released} - {movie.name}

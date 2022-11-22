@@ -12,11 +12,9 @@ const MOVIE = graphql(`
       genre
       released
       actors {
-        items {
-          id
-          firstName
-          lastName
-        }
+        id
+        firstName
+        lastName
       }
     }
   }
@@ -65,7 +63,7 @@ export default function MovieDetails() {
       <section>
         <h3>Actors</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
-          {data.movie.actors?.items.map((actor) => (
+          {data.movie.actors.map((actor) => (
             <Link
               key={actor.id}
               to={`/actor/${actor.id}/${slugify(

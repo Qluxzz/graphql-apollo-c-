@@ -11,10 +11,8 @@ const ACTOR = graphql(`
       firstName
       lastName
       movies {
-        items {
-          id
-          name
-        }
+        id
+        name
       }
     }
   }
@@ -53,7 +51,7 @@ export default function ActorDetails() {
         {data.person.firstName} {data.person.lastName}
       </h1>
       <ul>
-        {data.person.movies?.items.map((movie) => (
+        {data.person.movies.map((movie) => (
           <Link key={movie.id} to={`/movie/${movie.id}/${slugify(movie.name)}`}>
             <li>{movie.name}</li>
           </Link>
