@@ -1,9 +1,10 @@
-using EntityGraphQL.AspNet;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<GraphQL.DemoContext>();
-builder.Services.AddGraphQLSchema<GraphQL.DemoContext>();
+builder.Services
+    .AddGraphQLServer()
+    .RegisterDbContext<GraphQL.DemoContext>()
+    .AddQueryType<Query>();
 builder.Services.AddCors();
 
 var app = builder.Build();
@@ -22,10 +23,7 @@ else
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapGraphQL<GraphQL.DemoContext>();
-});
+app.MapGraphQL();
 
 using (var context = new GraphQL.DemoContext())
 {
@@ -46,6 +44,7 @@ using (var context = new GraphQL.DemoContext())
     context.Movies.AddRange(
         new GraphQL.Movie()
         {
+            Id = 1,
             Name = "The Departed",
             Genre = GraphQL.Genre.Action,
             Rating = 9.5,
@@ -56,6 +55,7 @@ using (var context = new GraphQL.DemoContext())
         },
         new GraphQL.Movie()
         {
+            Id = 2,
             Name = "Inception",
             Genre = GraphQL.Genre.Action,
             Rating = 10,
@@ -67,6 +67,7 @@ using (var context = new GraphQL.DemoContext())
         },
         new GraphQL.Movie()
         {
+            Id = 3,
             Name = "Dunkirk",
             Genre = GraphQL.Genre.Drama,
             Rating = 9.7,
