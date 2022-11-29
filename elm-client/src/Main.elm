@@ -5,8 +5,8 @@ import Api
 import Browser
 import Dict exposing (Dict)
 import GraphQL.Engine
-import Html
-import Html.Events
+import Html as H
+import Html.Events as HE
 import Movie.Movie exposing (Movie)
 import Process exposing (sleep)
 import Task
@@ -120,29 +120,45 @@ view model =
                 movieView movie
 
             Loading Visible ->
-                Html.div [] [ Html.text "Loading..." ]
+                H.div [] [ H.text "Loading..." ]
 
             Loading Hidden ->
-                Html.text ""
+                H.text ""
         ]
     }
 
 
-actorView : Person -> Html.Html Msg
+actorView : Person -> H.Html Msg
 actorView actor =
-    Html.div []
-        [ Html.h1 [] [ Html.text (actor.firstName ++ " " ++ actor.lastName) ]
-        , Html.ul [] (List.map (\movie -> Html.li [] [ Html.button [ Html.Events.onClick (LoadMovie movie.id) ] [ Html.text movie.name ] ]) actor.movies)
+    H.div []
+        [ H.h1 [] [ H.text (actor.firstName ++ " " ++ actor.lastName) ]
+        , H.ul []
+            (List.map
+                (\movie ->
+                    H.li []
+                        [ H.button [ HE.onClick (LoadMovie movie.id) ] [ H.text movie.name ]
+                        ]
+                )
+                actor.movies
+            )
         ]
 
 
-movieView : Movie -> Html.Html Msg
+movieView : Movie -> H.Html Msg
 movieView movie =
-    Html.div []
-        [ Html.h1 [] [ Html.text movie.name ]
-        , Html.ul [] (List.map (\actor -> Html.li [] [ Html.button [ Html.Events.onClick (LoadActor actor.id) ] [ Html.text (actor.firstName ++ " " ++ actor.lastName) ] ]) movie.actors)
-        , Html.time []
-            [ Html.text
+    H.div []
+        [ H.h1 [] [ H.text movie.name ]
+        , H.ul []
+            (List.map
+                (\actor ->
+                    H.li []
+                        [ H.button [ HE.onClick (LoadActor actor.id) ] [ H.text (actor.firstName ++ " " ++ actor.lastName) ]
+                        ]
+                )
+                movie.actors
+            )
+        , H.time []
+            [ H.text
                 (case movie.released of
                     Api.DateTime dateTime ->
                         dateTime
@@ -199,6 +215,6 @@ request toMsg query =
         , tracker = Nothing
         }
         |> Cmd.map toMsg
-    , sleep 200
-        |> Task.perform (\_ -> ShowLoader)
+    , -- Debounce show loader to avoid one frame re-render with loading text
+      sleep 200 |> Task.perform (\_ -> ShowLoader)
     ]
