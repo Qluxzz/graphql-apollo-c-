@@ -88,14 +88,14 @@ update msg model =
         LoadMovie id ->
             let
                 ( p, cmd ) =
-                    getCachedOrFetch id model.movies getMovieById Movie
+                    getCachedOrFetchMovie id model.movies
             in
             ( { model | selectedPath = p }, cmd )
 
         LoadActor id ->
             let
                 ( p, cmd ) =
-                    getCachedOrFetch id model.actors getActorById Actor
+                    getCachedOrFetchActor id model.actors
             in
             ( { model | selectedPath = p }, cmd )
 
@@ -106,21 +106,6 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
-
-
-getCachedOrFetch :
-    Int
-    -> Dict Int a
-    -> (Int -> List (Cmd Msg))
-    -> (a -> Path)
-    -> ( Path, Cmd Msg )
-getCachedOrFetch id dict fetch p =
-    case Dict.get id dict of
-        Just entry ->
-            ( p entry, Cmd.none )
-
-        Nothing ->
-            ( Loading Hidden, Cmd.batch (fetch id) )
 
 
 view : Model -> Browser.Document Msg
@@ -164,6 +149,35 @@ movieView movie =
                 )
             ]
         ]
+
+
+
+-- HELPER FUNCTIONS
+
+
+getCachedOrFetchMovie : Int -> Dict Int Movie -> ( Path, Cmd Msg )
+getCachedOrFetchMovie =
+    getCachedOrFetch getActorById Movie
+
+
+getCachedOrFetchActor : Int -> Dict Int Person -> ( Path, Cmd Msg )
+getCachedOrFetchActor =
+    getCachedOrFetch getActorById Actor
+
+
+getCachedOrFetch :
+    (Int -> List (Cmd Msg))
+    -> (a -> Path)
+    -> Int
+    -> Dict Int a
+    -> ( Path, Cmd Msg )
+getCachedOrFetch fetch p id dict =
+    case Dict.get id dict of
+        Just entry ->
+            ( p entry, Cmd.none )
+
+        Nothing ->
+            ( Loading Hidden, Cmd.batch (fetch id) )
 
 
 getActorById : Int -> List (Cmd Msg)
