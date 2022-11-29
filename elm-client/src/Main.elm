@@ -1,9 +1,15 @@
 module Main exposing (Model, main)
 
+import Actor.Actor exposing (Person)
+import Api
 import Browser
+import Dict exposing (Dict)
 import GraphQL.Engine
 import Html
-import Person.Movie exposing (Movie)
+import Html.Events
+import Movie.Movie exposing (Movie)
+import Process exposing (sleep)
+import Task
 
 
 main : Program () Model Msg
@@ -17,19 +23,40 @@ main =
 
 
 type Msg
-    = MovieFetched (Result GraphQL.Engine.Error Person.Movie.Response)
+    = MovieFetched (Result GraphQL.Engine.Error Movie.Movie.Response)
+    | ActorFetched (Result GraphQL.Engine.Error Actor.Actor.Response)
+    | LoadActor Int
+    | LoadMovie Int
+      -- Debounced loading state
+      -- Shows the loader after a request has taken more than x amount of milliseconds
+    | ShowLoader
+
+
+type ShowLoader
+    = Visible
+    | Hidden
+
+
+type Path
+    = Actor Person
+    | Movie Movie
+    | Loading ShowLoader
 
 
 type alias Model =
-    { movie : Maybe Movie
+    { movies : Dict Int Movie
+    , actors : Dict Int Person
+    , selectedPath : Path
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { movie = Nothing
+    ( { movies = Dict.empty
+      , actors = Dict.empty
+      , selectedPath = Loading Hidden
       }
-    , request MovieFetched (Person.Movie.query { movieId = 1 })
+    , Cmd.batch (getMovieById 1)
     )
 
 
@@ -37,34 +64,127 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MovieFetched (Ok { movie }) ->
-            ( { model | movie = movie }, Cmd.none )
+            case movie of
+                Just m ->
+                    ( { model | movies = Dict.insert m.id m model.movies, selectedPath = Movie m }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         MovieFetched (Err err) ->
             ( model, Cmd.none )
+
+        ActorFetched (Ok { person }) ->
+            case person of
+                Just p ->
+                    ( { model | actors = Dict.insert p.id p model.actors, selectedPath = Actor p }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        ActorFetched (Err _) ->
+            ( model, Cmd.none )
+
+        LoadMovie id ->
+            let
+                ( p, cmd ) =
+                    getCachedOrFetch id model.movies getMovieById Movie
+            in
+            ( { model | selectedPath = p }, cmd )
+
+        LoadActor id ->
+            let
+                ( p, cmd ) =
+                    getCachedOrFetch id model.actors getActorById Actor
+            in
+            ( { model | selectedPath = p }, cmd )
+
+        ShowLoader ->
+            case model.selectedPath of
+                Loading _ ->
+                    ( { model | selectedPath = Loading Visible }, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
+
+
+getCachedOrFetch :
+    Int
+    -> Dict Int a
+    -> (Int -> List (Cmd Msg))
+    -> (a -> Path)
+    -> ( Path, Cmd Msg )
+getCachedOrFetch id dict fetch p =
+    case Dict.get id dict of
+        Just entry ->
+            ( p entry, Cmd.none )
+
+        Nothing ->
+            ( Loading Hidden, Cmd.batch (fetch id) )
 
 
 view : Model -> Browser.Document Msg
 view model =
     { title = "Elm GQL"
     , body =
-        [ case model.movie of
-            Nothing ->
-                Html.div [] []
+        [ case model.selectedPath of
+            Actor actor ->
+                actorView actor
 
-            Just movie ->
-                Html.div []
-                    [ Html.h1 [] [ Html.text movie.name ]
-                    ]
+            Movie movie ->
+                movieView movie
+
+            Loading Visible ->
+                Html.div [] [ Html.text "Loading..." ]
+
+            Loading Hidden ->
+                Html.text ""
         ]
     }
 
 
-request : (Result GraphQL.Engine.Error value -> msg) -> GraphQL.Engine.Selection GraphQL.Engine.Query value -> Cmd msg
+actorView : Person -> Html.Html Msg
+actorView actor =
+    Html.div []
+        [ Html.h1 [] [ Html.text (actor.firstName ++ " " ++ actor.lastName) ]
+        , Html.ul [] (List.map (\movie -> Html.li [] [ Html.button [ Html.Events.onClick (LoadMovie movie.id) ] [ Html.text movie.name ] ]) actor.movies)
+        ]
+
+
+movieView : Movie -> Html.Html Msg
+movieView movie =
+    Html.div []
+        [ Html.h1 [] [ Html.text movie.name ]
+        , Html.ul [] (List.map (\actor -> Html.li [] [ Html.button [ Html.Events.onClick (LoadActor actor.id) ] [ Html.text (actor.firstName ++ " " ++ actor.lastName) ] ]) movie.actors)
+        , Html.time []
+            [ Html.text
+                (case movie.released of
+                    Api.DateTime dateTime ->
+                        dateTime
+                )
+            ]
+        ]
+
+
+getActorById : Int -> List (Cmd Msg)
+getActorById id =
+    request ActorFetched (Actor.Actor.query { actorId = id })
+
+
+getMovieById : Int -> List (Cmd Msg)
+getMovieById id =
+    request MovieFetched (Movie.Movie.query { movieId = id })
+
+
+request : (Result GraphQL.Engine.Error value -> Msg) -> GraphQL.Engine.Selection GraphQL.Engine.Query value -> List (Cmd Msg)
 request toMsg query =
-    GraphQL.Engine.query query
+    [ GraphQL.Engine.query query
         { headers = []
         , url = "http://localhost:5034/graphql"
         , timeout = Nothing
         , tracker = Nothing
         }
         |> Cmd.map toMsg
+    , sleep 200
+        |> Task.perform (\_ -> ShowLoader)
+    ]

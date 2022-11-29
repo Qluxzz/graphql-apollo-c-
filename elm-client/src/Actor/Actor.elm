@@ -1,7 +1,7 @@
-module Person.Movie exposing (Actors, Input, Movie, Response, query)
+module Actor.Actor exposing (Input, Movies, Person, Response, query)
 
 {-| 
-This file is generated from src/person.gql using `elm-gql`
+This file is generated from src/actor.gql using `elm-gql`
 
 Please avoid modifying directly.
 
@@ -12,35 +12,34 @@ Please avoid modifying directly.
 
 @docs query
 
-@docs Actors, Movie
+@docs Movies, Person
 
 
 -}
 
 
 import Api
-import Api.Enum.Genre
 import GraphQL.Engine
 import Json.Decode
 import Json.Encode
 
 
 type alias Input =
-    { movieId : Int }
+    { actorId : Int }
 
 
 query : Input -> Api.Query Response
 query args =
     GraphQL.Engine.bakeToSelection
-        (Just "Movie")
+        (Just "Actor")
         (\version_ ->
             { args =
                 GraphQL.Engine.inputObjectToFieldList
                     (GraphQL.Engine.inputObject "Input"
                         |> GraphQL.Engine.addField
-                            "movieId"
+                            "actorId"
                             "Int!"
-                            (Json.Encode.int args.movieId)
+                            (Json.Encode.int args.actorId)
                     )
             , body = toPayload_ version_
             , fragments = toFragments_ version_
@@ -53,20 +52,15 @@ query args =
 
 
 type alias Response =
-    { movie : Maybe Movie }
+    { person : Maybe Person }
 
 
-type alias Movie =
-    { id : Int
-    , name : String
-    , genre : Api.Enum.Genre.Genre
-    , released : Api.DateTime
-    , actors : List Actors
-    }
+type alias Person =
+    { id : Int, firstName : String, lastName : String, movies : List Movies }
 
 
-type alias Actors =
-    { id : Int, firstName : String, lastName : String }
+type alias Movies =
+    { id : Int, name : String }
 
 
 decoder_ : Int -> Json.Decode.Decoder Response
@@ -74,38 +68,30 @@ decoder_ version_ =
     Json.Decode.succeed Response
         |> GraphQL.Engine.versionedJsonField
             version_
-            "movie"
+            "person"
             (GraphQL.Engine.decodeNullable
-                (Json.Decode.succeed Movie
+                (Json.Decode.succeed Person
                     |> GraphQL.Engine.versionedJsonField 0 "id" Json.Decode.int
                     |> GraphQL.Engine.versionedJsonField
                         0
-                        "name"
+                        "firstName"
                         Json.Decode.string
                     |> GraphQL.Engine.versionedJsonField
                         0
-                        "genre"
-                        Api.Enum.Genre.decoder
+                        "lastName"
+                        Json.Decode.string
                     |> GraphQL.Engine.versionedJsonField
                         0
-                        "released"
-                        Api.dateTime.decoder
-                    |> GraphQL.Engine.versionedJsonField
-                        0
-                        "actors"
+                        "movies"
                         (Json.Decode.list
-                            (Json.Decode.succeed Actors
+                            (Json.Decode.succeed Movies
                                 |> GraphQL.Engine.versionedJsonField
                                     0
                                     "id"
                                     Json.Decode.int
                                 |> GraphQL.Engine.versionedJsonField
                                     0
-                                    "firstName"
-                                    Json.Decode.string
-                                |> GraphQL.Engine.versionedJsonField
-                                    0
-                                    "lastName"
+                                    "name"
                                     Json.Decode.string
                             )
                         )
@@ -115,16 +101,14 @@ decoder_ version_ =
 
 toPayload_ : Int -> String
 toPayload_ version_ =
-    ((GraphQL.Engine.versionedAlias version_ "movie" ++ " (id: ")
-        ++ GraphQL.Engine.versionedName version_ "$movieId"
+    ((GraphQL.Engine.versionedAlias version_ "person" ++ " (id: ")
+        ++ GraphQL.Engine.versionedName version_ "$actorId"
     )
         ++ """) {id
-name
-genre
-released
-actors {id
 firstName
-lastName } }"""
+lastName
+movies {id
+name } }"""
 
 
 toFragments_ : Int -> String

@@ -1,0 +1,11 @@
+query Actor($actorId: Int!) {
+  person(id: $actorId) {
+    id
+    firstName
+    lastName
+    movies {
+      id
+      name
+    }
+  }
+}
