@@ -66,7 +66,13 @@ update msg model =
         MovieFetched (Ok { movie }) ->
             case movie of
                 Just m ->
-                    ( { model | movies = Dict.insert m.id m model.movies, selectedPath = Movie m }, Cmd.none )
+                    ( { model
+                        | movies =
+                            Dict.insert m.id m model.movies
+                        , selectedPath = Movie m
+                      }
+                    , Cmd.none
+                    )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -77,7 +83,12 @@ update msg model =
         ActorFetched (Ok { person }) ->
             case person of
                 Just p ->
-                    ( { model | actors = Dict.insert p.id p model.actors, selectedPath = Actor p }, Cmd.none )
+                    ( { model
+                        | actors = Dict.insert p.id p model.actors
+                        , selectedPath = Actor p
+                      }
+                    , Cmd.none
+                    )
 
                 Nothing ->
                     ( model, Cmd.none )
