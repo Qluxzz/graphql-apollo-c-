@@ -184,7 +184,7 @@ movieView movie =
 
 getCachedOrFetchMovie : Int -> Dict Int Movie -> ( Path, Cmd Msg )
 getCachedOrFetchMovie =
-    getCachedOrFetch getActorById Movie
+    getCachedOrFetch getMovieById Movie
 
 
 getCachedOrFetchActor : Int -> Dict Int Person -> ( Path, Cmd Msg )
