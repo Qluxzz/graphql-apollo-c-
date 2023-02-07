@@ -2,28 +2,27 @@ using Microsoft.EntityFrameworkCore;
 
 public class Query
 {
-    public IEnumerable<GraphQL.Movie> GetMovies(GraphQL.DemoContext dbContext)
-        => dbContext.Movies.Include(x => x.Actors).AsQueryable();
-
-    public GraphQL.Movie? GetMovie(GraphQL.DemoContext dbContext, int id)
-    {
-        var query = dbContext.Movies
+    public IQueryable<GraphQL.Movie> GetMovies(GraphQL.DemoContext dbContext)
+        => dbContext
+            .Movies
             .Include(x => x.Actors)
             .AsQueryable();
 
-        query = query.Where(x => x.Id == id);
+    public IQueryable<GraphQL.Person> GetActors(GraphQL.DemoContext dbContext)
+        => dbContext
+            .People
+            .Include(x => x.Movies)
+            .AsQueryable();
 
-        return query.SingleOrDefault();
-    }
+    public GraphQL.Movie? GetMovie(GraphQL.DemoContext dbContext, int id)
+        => dbContext
+            .Movies
+            .Include(x => x.Actors)
+            .SingleOrDefault(x => x.Id == id);
 
     public GraphQL.Person? GetPerson(GraphQL.DemoContext dbContext, int id)
-    {
-        var query = dbContext.People.Include(x => x.Movies).AsQueryable();
-
-        query = query.Where(x => x.Id == id);
-
-        return query.SingleOrDefault();
-    }
-
-
+        => dbContext
+            .People
+            .Include(x => x.Movies)
+            .SingleOrDefault(x => x.Id == id);
 }
