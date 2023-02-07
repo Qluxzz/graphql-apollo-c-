@@ -46,7 +46,7 @@ namespace GraphQL
 
         public Genre Genre { get; set; }
 
-        public DateTime Released { get; set; }
+        public DateOnly Released { get; set; }
 
         public double Rating { get; internal set; }
 

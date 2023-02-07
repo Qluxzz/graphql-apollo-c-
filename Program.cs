@@ -48,7 +48,7 @@ using (var context = new GraphQL.DemoContext())
             Name = "The Departed",
             Genre = GraphQL.Genre.Action,
             Rating = 9.5,
-            Released = DateTime.Parse("2006-10-06"),
+            Released = DateOnly.Parse("2006-10-06"),
             Actors = new List<GraphQL.Person>() {
                 leonardoDiCaprio
             }
@@ -59,7 +59,7 @@ using (var context = new GraphQL.DemoContext())
             Name = "Inception",
             Genre = GraphQL.Genre.Action,
             Rating = 10,
-            Released = DateTime.Parse("2010-07-16"),
+            Released = DateOnly.Parse("2010-07-16"),
             Actors = new List<GraphQL.Person>() {
                 leonardoDiCaprio,
                 tomHardy
@@ -71,7 +71,7 @@ using (var context = new GraphQL.DemoContext())
             Name = "Dunkirk",
             Genre = GraphQL.Genre.Drama,
             Rating = 9.7,
-            Released = DateTime.Parse("2017-07-21"),
+            Released = DateOnly.Parse("2017-07-21"),
             Actors = new List<GraphQL.Person>() {
                 tomHardy
             }
