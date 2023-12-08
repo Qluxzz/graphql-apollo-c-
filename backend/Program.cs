@@ -10,6 +10,7 @@ builder.Services
     .AddQueryType<Test.Query>()
     .AddFiltering()
     .AddProjections()
+    .AddSorting()
     .RegisterDbContext<GraphQL.DemoContext>(DbContextKind.Pooled)
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 

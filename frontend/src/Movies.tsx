@@ -5,7 +5,7 @@ import { graphql } from "./gql"
 
 const MOVIES = graphql(`
   query Movies {
-    movies {
+    movies(order: { released: DESC }) {
       id
       name
       released

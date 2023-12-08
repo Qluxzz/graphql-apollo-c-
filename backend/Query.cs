@@ -9,6 +9,7 @@ public class Query
     /// <returns></returns>
     [UseProjection]
     [UseFiltering]
+    [UseSorting]
     public IQueryable<GraphQL.Movie> GetMovies(GraphQL.DemoContext dbContext)
         => dbContext.Movies;
 
@@ -19,6 +20,7 @@ public class Query
     [UseSingleOrDefault]
     [UseProjection]
     [UseFiltering]
+    [UseSorting]
     public IQueryable<GraphQL.Movie> GetMovie(GraphQL.DemoContext dbContext)
         => dbContext.Movies;
 

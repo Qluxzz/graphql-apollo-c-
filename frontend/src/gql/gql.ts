@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n  query Actor($actorId: Int!) {\n    actor(where: { id: { eq: $actorId } }) {\n      id\n      firstName\n      lastName\n      movies {\n        id\n        name\n      }\n    }\n  }\n": types.ActorDocument,
     "\n  query Movie($movieId: Int!) {\n    movie(where: { id: { eq: $movieId } }) {\n      id\n      name\n      genre\n      released\n      actors {\n        id\n        firstName\n        lastName\n      }\n    }\n  }\n": types.MovieDocument,
-    "\n  query Movies {\n    movies {\n      id\n      name\n      released\n      actors {\n        id\n      }\n    }\n  }\n": types.MoviesDocument,
+    "\n  query Movies {\n    movies(order: { released: DESC }) {\n      id\n      name\n      released\n      actors {\n        id\n      }\n    }\n  }\n": types.MoviesDocument,
 };
 
 /**
@@ -43,7 +43,7 @@ export function graphql(source: "\n  query Movie($movieId: Int!) {\n    movie(wh
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Movies {\n    movies {\n      id\n      name\n      released\n      actors {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  query Movies {\n    movies {\n      id\n      name\n      released\n      actors {\n        id\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query Movies {\n    movies(order: { released: DESC }) {\n      id\n      name\n      released\n      actors {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  query Movies {\n    movies(order: { released: DESC }) {\n      id\n      name\n      released\n      actors {\n        id\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
