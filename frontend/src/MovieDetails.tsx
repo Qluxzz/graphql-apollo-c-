@@ -6,7 +6,7 @@ import slugify from "./slugify"
 
 const MOVIE = graphql(`
   query Movie($movieId: Int!) {
-    movie(id: $movieId) {
+    movie(where: { id: { eq: $movieId } }) {
       id
       name
       genre

@@ -5,13 +5,9 @@ namespace GraphQL
 {
     public class DemoContext : DbContext
     {
-        public DemoContext()
+        public DemoContext(DbContextOptions<DemoContext> options) : base(options)
         {
         }
-
-        protected override void OnConfiguring(
-            DbContextOptionsBuilder builder
-        ) => builder.UseInMemoryDatabase("test");
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

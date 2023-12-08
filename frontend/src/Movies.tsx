@@ -23,8 +23,6 @@ export default function Movies() {
   if (error) return <p>Error {JSON.stringify(error)}</p>
   if (!data) return <p>Error :(</p>
 
-  console.log(data.movies[0].actors)
-
   return (
     <div>
       <ul>

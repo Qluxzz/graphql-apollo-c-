@@ -1,10 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<GraphQL.DemoContext>();
+builder.Services.AddPooledDbContextFactory<GraphQL.DemoContext>(
+    options => options.UseInMemoryDatabase("test")
+);
 builder.Services
     .AddGraphQLServer()
-    .RegisterDbContext<GraphQL.DemoContext>()
-    .AddQueryType<Query>();
+    .AddQueryType<Test.Query>()
+    .AddFiltering()
+    .AddProjections()
+    .RegisterDbContext<GraphQL.DemoContext>(DbContextKind.Pooled)
+    .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment());
+
 builder.Services.AddCors();
 
 var app = builder.Build();
@@ -16,6 +24,7 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
+    app.UseDeveloperExceptionPage();
     app.UseCors(options =>
         options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()
     );
@@ -25,7 +34,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.MapGraphQL();
 
-using (var context = new GraphQL.DemoContext())
+using (var context = app.Services.GetRequiredService<IDbContextFactory<GraphQL.DemoContext>>().CreateDbContext())
 {
     var leonardoDiCaprio = new GraphQL.Person()
     {

@@ -1,28 +1,45 @@
-using Microsoft.EntityFrameworkCore;
+namespace Test;
+
 
 public class Query
 {
+    /// <summary>
+    /// Gets all movies
+    /// </summary>
+    /// <returns></returns>
+    [UseProjection]
+    [UseFiltering]
     public IQueryable<GraphQL.Movie> GetMovies(GraphQL.DemoContext dbContext)
-        => dbContext
-            .Movies
-            .Include(x => x.Actors)
-            .AsQueryable();
+        => dbContext.Movies;
 
+    /// <summary>
+    /// Get movie
+    /// </summary>
+    /// <returns></returns>
+    [UseSingleOrDefault]
+    [UseProjection]
+    [UseFiltering]
+    public IQueryable<GraphQL.Movie> GetMovie(GraphQL.DemoContext dbContext)
+        => dbContext.Movies;
+
+    /// <summary>
+    /// Gets all actors
+    /// </summary>
+    /// <param name="dbContext"></param>
+    /// <returns></returns>
+    [UseProjection]
+    [UseFiltering]
     public IQueryable<GraphQL.Person> GetActors(GraphQL.DemoContext dbContext)
-        => dbContext
-            .People
-            .Include(x => x.Movies)
-            .AsQueryable();
+        => dbContext.People;
 
-    public GraphQL.Movie? GetMovie(GraphQL.DemoContext dbContext, int id)
-        => dbContext
-            .Movies
-            .Include(x => x.Actors)
-            .SingleOrDefault(x => x.Id == id);
-
-    public GraphQL.Person? GetPerson(GraphQL.DemoContext dbContext, int id)
-        => dbContext
-            .People
-            .Include(x => x.Movies)
-            .SingleOrDefault(x => x.Id == id);
+    /// <summary>
+    /// Get actor
+    /// </summary>
+    /// <param name="dbContext"></param>
+    /// <returns></returns>
+    [UseSingleOrDefault]
+    [UseProjection]
+    [UseFiltering]
+    public IQueryable<GraphQL.Person> GetActor(GraphQL.DemoContext dbContext)
+        => dbContext.People;
 }
