@@ -11,8 +11,9 @@ Example project using [Hot Chocolate](https://chillicream.com/docs/hotchocolate/
 
 # How to run
 
-- `dotnet run` in root
+- `dotnet run` in root to start the backend
 - `cd client`
-- `npm start` and `npm run codegen`
+- `npm start` to start the dev environment for the frontend
+- `npm run codegen` to automatically regenerate query types
 
-After that you should be able to write GraphQL querys and the type interface should be automatically generated
+After that you should be able to write GraphQL queries and the type interface should be automatically generated
